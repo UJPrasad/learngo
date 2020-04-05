@@ -4,6 +4,6 @@ import "fmt"
 
 func main() {
 	cards := newDeck()
-
-	fmt.Println(cards.deal(500, 3))
+	cards.shuffle()
+	fmt.Println(cards)
 }

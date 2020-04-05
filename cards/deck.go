@@ -1,6 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"io/ioutil"
+	"log"
+	"math/rand"
+	"os"
+	"strings"
+	"time"
+)
 
 type deck []string
 
@@ -19,8 +27,38 @@ func newDeck() deck {
 	return cards
 }
 
-func (d deck) deal(f int, t int) []string {
-	return d[:t]
+func (d deck) deal(t int) (deck, deck) {
+	return d[:t], d[t:]
+}
+
+func (d deck) saveToFile(f string) {
+
+	err := ioutil.WriteFile(f, []byte(d.toString()), 0644)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (d deck) toString() string {
+	return strings.Join(d, ",")
+}
+
+func loadFromFile(f string) deck {
+	bytes, err := ioutil.ReadFile(f)
+
+	if err != nil {
+		log.Fatal("Error: ", err)
+		os.Exit(1)
+	}
+
+	return deck(strings.Split(string(bytes), ","))
+}
+
+func (d deck) shuffle() {
+	rand.Seed((time.Now()).UnixNano())
+	rand.Shuffle(len(d), func(i, j int) {
+		d[i], d[j] = d[j], d[i]
+	})
 }
 
 func (d deck) print() {
